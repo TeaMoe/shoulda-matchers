@@ -116,7 +116,9 @@ module Shoulda # :nodoc:
               # Assume the scope is a foreign key if the field is nil
               previous_value ||= 0
 
-              next_value = if previous_value.respond_to?(:next)
+              next_value = if scope.to_s =~ /_type$/ && klass = previous_value.constantize rescue nil && klass.ancestors.include?(ActiveRecord::Base)
+                ::ActiveRecord::Base.descendants.find {|model| model.to_s != previous_value }.to_s
+              elsif previous_value.respond_to?(:next)
                 previous_value.next
               else
                 previous_value.to_s.next
